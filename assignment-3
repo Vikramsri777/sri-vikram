@@ -1,0 +1,209 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOFoAOKchGYLx7VVMZDlLhC",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Vikramsri777/sri-vikram/blob/main/assignment-3\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [],
+      "metadata": {
+        "id": "KfKgAlO1AMhs"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Part 2 – Implement the Game Strategy Algorithms\n",
+        "1. Implement the MiniMax Search Algorithm"
+      ],
+      "metadata": {
+        "id": "zDKZoSrEAOXC"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import math\n",
+        "\n",
+        "# Function to evaluate the utility of a given state\n",
+        "def evaluate(state):\n",
+        "    # For simplicity, just returning the state itself as utility\n",
+        "    return state\n",
+        "\n",
+        "# Function to generate child nodes for a given state\n",
+        "def generate_children(state):\n",
+        "    if state == 6:\n",
+        "        return [5, 4]\n",
+        "    elif state == 5:\n",
+        "        return [8, 10, 14]\n",
+        "    elif state == 4:\n",
+        "        return [7, 9, 13]\n",
+        "    else:\n",
+        "        return []\n",
+        "\n",
+        "# MINMAX search algorithm\n",
+        "def minmax(state, depth, maximizing_player, alpha, beta):\n",
+        "    if depth == 0 or state not in [4, 5, 6]:  # Assuming terminal nodes are states 4, 5, and 6\n",
+        "        return evaluate(state), None  # Return both the value and move\n",
+        "\n",
+        "    if maximizing_player:\n",
+        "        max_val = -math.inf\n",
+        "        best_max_move = None\n",
+        "        for child_state in generate_children(state):\n",
+        "            val, _ = minmax(child_state, depth - 1, False, alpha, beta)\n",
+        "            if val > max_val:\n",
+        "                max_val = val\n",
+        "                best_max_move = child_state\n",
+        "            alpha = max(alpha, max_val)\n",
+        "            if beta <= alpha:\n",
+        "                break\n",
+        "        return max_val, best_max_move\n",
+        "    else:\n",
+        "        min_val = math.inf\n",
+        "        best_min_move = None\n",
+        "        for child_state in generate_children(state):\n",
+        "            val, _ = minmax(child_state, depth - 1, True, alpha, beta)\n",
+        "            if val < min_val:\n",
+        "                min_val = val\n",
+        "                best_min_move = child_state\n",
+        "            beta = min(beta, min_val)\n",
+        "            if beta <= alpha:\n",
+        "                break\n",
+        "        return min_val, best_min_move\n",
+        "\n",
+        "# Initial call to MINMAX algorithm\n",
+        "state = 6\n",
+        "alpha = -math.inf\n",
+        "beta = math.inf\n",
+        "depth = 3  # Depth of the search tree\n",
+        "max_result, max_best_move = minmax(state, depth, True, alpha, beta)\n",
+        "min_result, min_best_move = minmax(state, depth, False, alpha, beta)\n",
+        "\n",
+        "print(\"Max value:\", max_result)\n",
+        "print(\"Optimum move for Max:\", max_best_move)\n",
+        "print(\"Min value:\", min_result)\n",
+        "print(\"Optimum move for Min:\", min_best_move)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Nln_KCX6AUOQ",
+        "outputId": "8c8758fb-2836-4145-b0a0-3c1d17e42839"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Max value: 8\n",
+            "Optimum move for Max: 5\n",
+            "Min value: 13\n",
+            "Optimum move for Min: 4\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "2. Implement the Alpha-Beta Search Algorithm\n"
+      ],
+      "metadata": {
+        "id": "Y_HOAfm-AZtT"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def minimax(state, alpha, beta, is_max):\n",
+        "    if state == 6:\n",
+        "        # Initial state, assuming it's a max node\n",
+        "        child_nodes = [5, 4]\n",
+        "    elif state == 5:\n",
+        "        child_nodes = [8, 10, 14]\n",
+        "    elif state == 4:\n",
+        "        child_nodes = [7, 9, 13]\n",
+        "    else:\n",
+        "        # Terminal state or leaf node, return the utility value\n",
+        "        return state\n",
+        "\n",
+        "    if is_max:\n",
+        "        value = float('-inf')\n",
+        "        for child in child_nodes:\n",
+        "            value = max(value, minimax(child, alpha, beta, False))\n",
+        "            alpha = max(alpha, value)\n",
+        "            if alpha >= beta:\n",
+        "                break  # Beta cut-off\n",
+        "        return value\n",
+        "    else:\n",
+        "        value = float('inf')\n",
+        "        for child in child_nodes:\n",
+        "            value = min(value, minimax(child, alpha, beta, True))\n",
+        "            beta = min(beta, value)\n",
+        "            if beta <= alpha:\n",
+        "                break  # Alpha cut-off\n",
+        "        return value\n",
+        "\n",
+        "alpha = float('-inf')\n",
+        "beta = float('inf')\n",
+        "optimum_move = None\n",
+        "for move in [5, 4]:\n",
+        "    move_value = minimax(move, alpha, beta, False)\n",
+        "    if move_value > alpha:\n",
+        "        alpha = move_value\n",
+        "        optimum_move = move\n",
+        "print(\"Optimal value for the initial state (6) using MINMAX search:\", alpha)\n",
+        "print(\"alpha value:\", alpha)\n",
+        "print(\"beta value:\", beta)\n",
+        "print(\"minimum value:\", move_value)\n",
+        "print(\"Optimum move:\", optimum_move)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "z9GsqrcJAfV7",
+        "outputId": "509be17e-cf48-4ada-cd96-62bfcf5cf838"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Optimal value for the initial state (6) using MINMAX search: 8\n",
+            "alpha value: 8\n",
+            "beta value: inf\n",
+            "minimum value: 7\n",
+            "Optimum move: 5\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
